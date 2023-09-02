@@ -41,7 +41,6 @@ build/
 
 ### VS Code ###
 .vscode/
-.github/workflows/
 
 *.db
 db/*
