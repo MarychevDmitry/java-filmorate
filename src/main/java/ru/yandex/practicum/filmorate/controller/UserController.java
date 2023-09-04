@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.UpdateException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import javax.validation.Valid;
+import static ru.yandex.practicum.filmorate.validator.UserValidator.isUserValid;
+
+import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,32 +28,39 @@ public class UserController {
 
     @GetMapping
     public List<User> findAll() {
-        log.debug("Текущее количество пользователей: {}. \n Список всех пользователей: {}", users.size(), users);
+        log.info("Request: List of all Users.\nCurrent number of Users: {}.\nList of all Users: {}", users.size(), users);
 
         return new ArrayList<User>(users.values());
     }
 
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
+    public User create(@RequestBody User user) {
+        log.info("Request: Adding  new User.");
+        if (!isUserValid(user)) {
+            throw new ValidationException("User validation Error.");
+        }
         user.setId(getId());
         user.updateName();
         users.put(user.getId(), user);
-        log.debug("Добавлен новый Пользователь: {}.", user);
+        log.info("New User added: {}.", user);
         return user;
     }
 
     @PutMapping
-    public User update(@Valid @RequestBody User user) {
-        log.debug("Запрос на обновления пользователь с id: {}.", user.getId());
+    public User update(@RequestBody User user) {
+        log.info("Request: Update User with id: {}.", user.getId());
+        if (!isUserValid(user)) {
+            throw new ValidationException("User validation Error.");
+        }
         if (!users.containsKey(user.getId())) {
-            throw new UpdateException("Пользователь с id: " + user.getId() + " не найден.");
+            throw new UpdateException("User with id: " + user.getId() + " not found.");
         }
         users.put(user.getId(), user);
-        log.debug("Обновлен пользователь с id: {}. Пользователь: {}", user.getId(), user);
+        log.info("Updated User with id: {}. User: {}", user.getId(), user);
         return user;
     }
 
-    public int getId() {
+    private int getId() {
         return id++;
     }
 }

@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exception.UpdateException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import static ru.yandex.practicum.filmorate.validator.FilmValidator.isFilmValid;
+
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,31 +29,38 @@ public class FilmController {
 
     @GetMapping
     public List<Film> findAll() {
-        log.debug("Текущее количество фильмов: {}. \n Список всех фильмов: {}", films.size(), films);
+        log.info("Request: List of all Films.\nCurrent number of Films: {}.\nList of all Films: {}", films.size(), films);
 
         return new ArrayList<Film>(films.values());
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
+        log.info("Request: Adding  new Film.");
+        if (!isFilmValid(film)) {
+            throw new ValidationException("Film validation Error.");
+        }
         film.setId(getId());
         films.put(film.getId(), film);
-        log.debug("Добавлен новый фильм: {}.", film);
+        log.info("New Film added: {}.", film);
         return film;
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        log.debug("Запрос на обновления фильма с id: {}.", film.getId());
+        log.info("Request: Update Film with id: {}.", film.getId());
+        if (!isFilmValid(film)) {
+            throw new ValidationException("Film validation Error.");
+        }
         if (!films.containsKey(film.getId())) {
-            throw new UpdateException("Фильм с id: " + film.getId() + " не найден.");
+            throw new UpdateException("Film with id: " + film.getId() + " not found.");
         }
         films.put(film.getId(), film);
-        log.debug("Обновлен фильм с id: {}. Фильм: {}", film.getId(), film);
+        log.info("Updated Film with id: {}. Film: {}", film.getId(), film);
         return film;
     }
 
-    public int getId() {
+    private int getId() {
         return id++;
     }
 }

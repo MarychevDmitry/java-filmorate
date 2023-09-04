@@ -4,40 +4,39 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.User;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Set;
+
+import static ru.yandex.practicum.filmorate.validator.UserValidator.isUserValid;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class UserControllerTest {
 
-    private final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-    private final Validator validator = validatorFactory.getValidator();
-    private final User user = User
-            .builder()
-            .login("TestLogin")
-            .name("TestName")
-            .email("testemail@email.com")
-            .birthday(LocalDate.parse("1996-03-04"))
-            .build();
-
     @Test
     void create_shouldCreateUserIfFieldsIsValid() {
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        User user = User
+                .builder()
+                .login("TestLogin")
+                .name("TestName")
+                .email("email@email.com")
+                .birthday(LocalDate.parse("1996-03-04"))
+                .build();
 
-        assertAll("Test: create | Должен проверить валидность полей объекта и присвоить ему id.",
-                () -> assertTrue(violations.isEmpty())
-        );
+        assertTrue(isUserValid(user));
     }
 
     @Test
     void create_shouldNotCreateUserWithWrongLogin() {
+        User user = User
+                .builder()
+                .login("TestLogin")
+                .name("TestName")
+                .email("email@email.com")
+                .birthday(LocalDate.parse("1996-03-04"))
+                .build();
+
         String[] logins = {null, "wrong name", "", " "};
 
         Arrays.stream(logins).forEach(login -> {
@@ -46,16 +45,20 @@ public class UserControllerTest {
                     .login(login)
                     .build();
 
-            Set<ConstraintViolation<User>> violations = validator.validate(userWithIncorrectLogin);
-
-            assertAll("Test: create | Пользователь с пустым или равным null логином не должен пройти валидацию.",
-                    () -> assertFalse(violations.isEmpty())
-            );
+            assertFalse(isUserValid(userWithIncorrectLogin));
         });
     }
 
     @Test
     void create_shouldNotCreateUserWithWrongEmail() {
+        User user = User
+                .builder()
+                .login("TestLogin")
+                .name("TestName")
+                .email("email@email.com")
+                .birthday(LocalDate.parse("1996-03-04"))
+                .build();
+
         String[] emails = {null, "", " ", "test.@email.ru", ".test.@email.ru", "testemail.ru"};
 
         Arrays.stream(emails).forEach(email -> {
@@ -64,26 +67,25 @@ public class UserControllerTest {
                     .email(email)
                     .build();
 
-            Set<ConstraintViolation<User>> violations = validator.validate(userWithIncorrectEmail);
-
-            assertAll("Test: create | Пользователь с неверным email не должен пройти валидацию.",
-                    () -> assertFalse(violations.isEmpty())
-            );
+            assertFalse(isUserValid(userWithIncorrectEmail));
         });
     }
 
     @Test
     void create_shouldNotCreateUserWithBirthdayInFuture() {
+        User user = User
+                .builder()
+                .login("TestLogin")
+                .name("TestName")
+                .email("email@email.com")
+                .birthday(LocalDate.parse("1996-03-04"))
+                .build();
+
         User userWithBirthdayInFuture = user
                 .toBuilder()
                 .birthday(LocalDate.parse("3000-01-01"))
                 .build();
 
-        Set<ConstraintViolation<User>> violations = validator.validate(userWithBirthdayInFuture);
-
-        assertAll("Test: create | Пользователь с датой рождения в будщем не должен пройти валидацию.",
-                () -> assertFalse(violations.isEmpty()),
-                () -> assertEquals(1, violations.size())
-        );
+        assertFalse(isUserValid(userWithBirthdayInFuture));
     }
 }
