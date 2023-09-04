@@ -8,8 +8,8 @@ public class PatternValidator {
         if (string == null || regexPattern == null) {
             return false;
         }
-        return Pattern.compile(regexPattern).
-                matcher(string)
+        return Pattern.compile(regexPattern)
+                .matcher(string)
                 .matches();
     }
 }
