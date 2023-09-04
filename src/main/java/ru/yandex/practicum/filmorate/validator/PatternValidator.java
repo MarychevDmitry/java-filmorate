@@ -9,7 +9,7 @@ public class PatternValidator {
             return false;
         }
         return Pattern.compile(regexPattern).
-                matcher(string).
-                matches();
+                matcher(string)
+                .matches();
     }
 }
