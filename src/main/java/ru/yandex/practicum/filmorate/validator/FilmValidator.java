@@ -8,7 +8,7 @@ import static ru.yandex.practicum.filmorate.util.Constants.FIRST_FILM_BIRTHDAY;
 public class FilmValidator {
 
     public static boolean isFilmValid(Film film) {
-       if (film.getId() != null && film.getId() <= 0 ) {
+       if (film.getId() != null && film.getId() <= 0) {
             throw new FilmValidationException(String.format("Id should be positive or null. %s.", film));
        } else if (film.getName() == null || film.getName().isBlank()) {
            throw new FilmValidationException(String.format("Name can't be blank or null. %s.", film));
