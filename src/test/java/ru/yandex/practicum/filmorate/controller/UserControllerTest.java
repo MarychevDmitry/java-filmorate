@@ -3,14 +3,12 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.exception.FilmValidationException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import static ru.yandex.practicum.filmorate.validator.FilmValidator.isFilmValid;
 import static ru.yandex.practicum.filmorate.validator.UserValidator.isUserValid;
 
 import static org.junit.jupiter.api.Assertions.*;
