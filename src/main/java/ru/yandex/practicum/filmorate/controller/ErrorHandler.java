@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice("ru.yandex.practicum.filmorate.controller")
 public class ErrorHandler {
 
-    @ExceptionHandler({NullPointerException.class , NoSuchElementException.class})
+    @ExceptionHandler({NullPointerException.class, NoSuchElementException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final RuntimeException exception) {
         return new ErrorResponse(exception.getMessage());
