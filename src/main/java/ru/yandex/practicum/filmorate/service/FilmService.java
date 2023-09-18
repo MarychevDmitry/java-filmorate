@@ -69,7 +69,7 @@ public class FilmService {
 
     private void isUserIdValid(Integer userId) {
         if (userId <= 0) {
-            throw new UserNotFoundException("User id can not be negative or zero");
+            throw new UserNotFoundException("User id can not be negative or zero.");
         }
     }
 }
