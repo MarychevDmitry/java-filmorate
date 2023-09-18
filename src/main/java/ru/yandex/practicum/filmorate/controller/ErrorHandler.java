@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
 
 import javax.validation.ValidationException;
-import java.util.NoSuchElementException;
 
 @RestControllerAdvice("ru.yandex.practicum.filmorate.controller")
 @Slf4j

@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import static ru.yandex.practicum.filmorate.validator.UserValidator.isUserValid;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -34,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<User> getUsers() {
+    public List<User> getUsers() {
         log.info(String.format("Get all Users. Total amount of Users: %s", userService.getUsers().size()));
         return new ArrayList<>(userService.getUsers().values());
     }
