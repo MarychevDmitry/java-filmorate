@@ -14,4 +14,8 @@ public class UserValidator {
                 isPatternMatches(user.getLogin(), LOGIN_REGEX_PATTERN) &&
                 user.getBirthday().isBefore(LocalDate.now());
     }
+
+    public static boolean isUserNameValid(String userName) {
+        return !userName.isBlank();
+    }
 }

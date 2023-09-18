@@ -1,66 +1,73 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.exception.UpdateException;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-
+import ru.yandex.practicum.filmorate.service.UserService;
 import static ru.yandex.practicum.filmorate.validator.UserValidator.isUserValid;
 
 import javax.validation.ValidationException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
 @RequestMapping("/users")
 public class UserController {
 
-    private int id = 1;
-    private final Map<Integer, User> users = new HashMap<>();
+    private final UserService userService;
 
-    @GetMapping
-    public List<User> findAll() {
-        log.info("Request: List of all Users.\nCurrent number of Users: {}.\nList of all Users: {}", users.size(), users);
-
-        return new ArrayList<User>(users.values());
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
-        log.info("Request: Adding  new User.");
+    public User createUser(@RequestBody User user) {
         if (!isUserValid(user)) {
-            throw new ValidationException("User validation Error.");
+            throw new ValidationException("Validation Error");
         }
-        user.setId(getId());
-        user.updateName();
-        users.put(user.getId(), user);
-        log.info("New User added: {}.", user);
-        return user;
+
+        return userService.createUser(user);
     }
 
     @PutMapping
-    public User update(@RequestBody User user) {
-        log.info("Request: Update User with id: {}.", user.getId());
+    public User updateUser(@RequestBody User user) {
         if (!isUserValid(user)) {
-            throw new ValidationException("User validation Error.");
+            throw new ValidationException("Validation Error");
         }
-        if (!users.containsKey(user.getId())) {
-            throw new UpdateException("User with id: " + user.getId() + " not found.");
-        }
-        users.put(user.getId(), user);
-        log.info("Updated User with id: {}. User: {}", user.getId(), user);
-        return user;
+
+        return userService.updateUser(user);
     }
 
-    private int getId() {
-        return id++;
+    @GetMapping
+    public Collection<User> getUsers() {
+        return new ArrayList<>(userService.getUsers().values());
+    }
+
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable("id") Integer id) {
+        return userService.getUserById(id);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getUserFriends(@PathVariable("id") Integer id) {
+        return userService.getUserFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable("id") Integer id, @PathVariable("otherId") Integer otherId) {
+        return userService.getCommonFriends(id, otherId);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable("id") Integer id, @PathVariable("friendId") Integer friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable("id") Integer id, @PathVariable("friendId") Integer friendId) {
+        userService.deleteFriend(id, friendId);
     }
 }
+
