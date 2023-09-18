@@ -1,25 +1,23 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.validator.UserValidator.isUserNameValid;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final InMemoryUserStorage userStorage;
-
-    public UserService(InMemoryUserStorage inMemoryUserStorage) {
-        this.userStorage = inMemoryUserStorage;
-    }
 
     public User createUser(User user) {
         setUserName(user);
@@ -97,7 +95,7 @@ public class UserService {
 
     private void checkUserIsNotNull(Integer id) {
         if (userStorage.getById(id) == null) {
-            throw new NoSuchElementException(String.format("No User with id %s.", id));
+            throw new UserNotFoundException(String.format("User with id %s. not found", id));
         }
     }
 

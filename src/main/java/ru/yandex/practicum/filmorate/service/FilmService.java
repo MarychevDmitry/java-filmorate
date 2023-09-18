@@ -1,22 +1,22 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class FilmService {
 
     private final InMemoryFilmStorage filmStorage;
-
-    public FilmService(InMemoryFilmStorage inMemoryFilmStorage) {
-        this.filmStorage = inMemoryFilmStorage;
-    }
 
     public Film createFilm(Film film) {
         return filmStorage.create(film);
@@ -28,8 +28,8 @@ public class FilmService {
         return filmStorage.update(film);
     }
 
-    public Map<Integer, Film> getFilms() {
-        return filmStorage.getAll();
+    public List<Film> getFilms() {
+        return new ArrayList<>(filmStorage.getAll().values());
     }
 
     public Film getFilmById(Integer id) {
@@ -63,13 +63,13 @@ public class FilmService {
 
     private void isFilmExists(Integer id) {
         if (filmStorage.getById(id) == null) {
-            throw new NoSuchElementException(String.format("No Film with id %s.", id));
+            throw new FilmNotFoundException(String.format("Film with id %s not found.", id));
         }
     }
 
     private void isUserIdValid(Integer userId) {
         if (userId <= 0) {
-            throw new NoSuchElementException("User id can not be negativ or zero");
+            throw new UserNotFoundException("User id can not be negative or zero");
         }
     }
 }
