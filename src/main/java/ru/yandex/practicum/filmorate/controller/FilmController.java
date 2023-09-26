@@ -1,66 +1,66 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.exception.UpdateException;
+import org.springframework.web.bind.annotation.*;
+
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import static ru.yandex.practicum.filmorate.validator.FilmValidator.isFilmValid;
 
-import javax.validation.Valid;
-import javax.validation.ValidationException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
 
-    private int id = 1;
-    private final Map<Integer, Film> films = new HashMap<>();
-
-    @GetMapping
-    public List<Film> findAll() {
-        log.info("Request: List of all Films.\nCurrent number of Films: {}.\nList of all Films: {}", films.size(), films);
-
-        return new ArrayList<Film>(films.values());
-    }
+    private final FilmService filmService;
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
-        log.info("Request: Adding  new Film.");
-        if (!isFilmValid(film)) {
-            throw new ValidationException("Film validation Error.");
-        }
-        film.setId(getId());
-        films.put(film.getId(), film);
-        log.info("New Film added: {}.", film);
-        return film;
+    public Film createFilm(@RequestBody Film film) {
+        isFilmValid(film);
+        log.info(String.format("Created new %s.", film));
+        return filmService.createFilm(film);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
-        log.info("Request: Update Film with id: {}.", film.getId());
-        if (!isFilmValid(film)) {
-            throw new ValidationException("Film validation Error.");
-        }
-        if (!films.containsKey(film.getId())) {
-            throw new UpdateException("Film with id: " + film.getId() + " not found.");
-        }
-        films.put(film.getId(), film);
-        log.info("Updated Film with id: {}. Film: {}", film.getId(), film);
+    public Film updateFilm(@RequestBody Film film) {
+        isFilmValid(film);
+        filmService.updateFilm(film);
+        log.info(String.format("Updated Film with id: %s. %s.", film.getId(), film));
         return film;
     }
 
-    private int getId() {
-        return id++;
+    @GetMapping
+    public List<Film> getFilms() {
+        log.info(String.format("Get all Films. Total amount of Films: %s", filmService.getFilms().size()));
+        return filmService.getFilms();
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable("id") Integer id) {
+        log.info(String.format("Get Film with id: %s. %s.", id, filmService.getFilmById(id)));
+        return filmService.getFilmById(id);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getMostPopularFilms(@RequestParam(name = "count", defaultValue = "10", required = false) Integer count) {
+        log.info(String.format("Get top %s most popular Films.", count));
+        return filmService.getMostPopularFilms(count);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId) {
+        filmService.addLike(id, userId);
+        log.info(String.format("User with id: %s added Like to Film id: %s", userId, id));
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void deleteLike(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId) {
+        filmService.deleteLike(id, userId);
+        log.info(String.format("User with id: %s deleted Like from Film id: %s", userId, id));
     }
 }

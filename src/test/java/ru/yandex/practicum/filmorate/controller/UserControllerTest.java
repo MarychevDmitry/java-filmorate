@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.exception.UserValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -45,7 +47,10 @@ public class UserControllerTest {
                     .login(login)
                     .build();
 
-            assertFalse(isUserValid(userWithIncorrectLogin));
+            UserValidationException exception = Assertions.assertThrows(
+                    UserValidationException.class, () -> isUserValid(userWithIncorrectLogin));
+
+            assertEquals(String.format("Login validation error.", userWithIncorrectLogin), exception.getMessage());
         });
     }
 
@@ -67,7 +72,10 @@ public class UserControllerTest {
                     .email(email)
                     .build();
 
-            assertFalse(isUserValid(userWithIncorrectEmail));
+            UserValidationException exception = Assertions.assertThrows(
+                    UserValidationException.class, () -> isUserValid(userWithIncorrectEmail));
+
+            assertEquals(String.format("Email validation error.", userWithIncorrectEmail), exception.getMessage());
         });
     }
 
@@ -86,6 +94,9 @@ public class UserControllerTest {
                 .birthday(LocalDate.parse("3000-01-01"))
                 .build();
 
-        assertFalse(isUserValid(userWithBirthdayInFuture));
+        UserValidationException exception = Assertions.assertThrows(
+                UserValidationException.class, () -> isUserValid(userWithBirthdayInFuture));
+
+        assertEquals(String.format("Birthday day can't be in future.", userWithBirthdayInFuture), exception.getMessage());
     }
 }
