@@ -1,16 +1,27 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Map;
+import java.util.List;
 
+@Component
 public interface UserStorage {
+    User createUser(User user);
 
-    public User create(User user);
+    User updateUser(User user);
 
-    public User update(User user);
+    List<User> getUsers();
 
-    public Map<Integer, User> getAll();
+    User getUserById(int id);
 
-    public User getById(Integer id);
+    List<Integer> getFriendsId(User user);
+
+    List<User> getFriendsList(Integer userId);
+
+    void addFriend(int userId, int friendId);
+
+    void deleteFriend(int userId, int friendId);
+
+    boolean isUserExistInBd(int id);
 }

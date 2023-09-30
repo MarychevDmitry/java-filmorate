@@ -85,7 +85,7 @@ public class FilmControllerTest {
                 .releaseDate(LocalDate.parse("1895-12-28"))
                 .build();
 
-       assertTrue(isFilmValid(filmWithFirstFilmReleaseDate));
+        assertTrue(isFilmValid(filmWithFirstFilmReleaseDate));
     }
 
     @Test

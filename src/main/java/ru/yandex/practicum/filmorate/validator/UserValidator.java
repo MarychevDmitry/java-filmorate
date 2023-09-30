@@ -9,7 +9,6 @@ import static ru.yandex.practicum.filmorate.util.Constants.LOGIN_REGEX_PATTERN;
 import java.time.LocalDate;
 
 public class UserValidator {
-
     public static boolean isUserValid(User user) {
         if (user.getId() != null && user.getId() <= 0) {
             throw new UserValidationException("Id should be positive or null.");
@@ -20,11 +19,10 @@ public class UserValidator {
         } else if (user.getBirthday().isAfter(LocalDate.now())) {
             throw new UserValidationException("Birthday day can't be in future.");
         } else {
+            if (user.getName().isBlank()) {
+                user.setName(user.getLogin());
+            }
             return true;
         }
-    }
-
-    public static boolean isUserNameValid(String userName) {
-        return !userName.isBlank();
     }
 }

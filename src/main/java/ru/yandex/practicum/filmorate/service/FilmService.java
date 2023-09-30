@@ -1,74 +1,86 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.filmGenre.GenreStorage;
+import static ru.yandex.practicum.filmorate.validator.FilmValidator.isFilmValid;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FilmService {
-
-    private final InMemoryFilmStorage filmStorage;
+    private final FilmStorage filmStorage;
+    private final GenreStorage genreStorage;
 
     public Film createFilm(Film film) {
-        return filmStorage.create(film);
+        isFilmValid(film);
+
+        return genreStorage.setGenre(filmStorage.createFilm(film));
     }
 
     public Film updateFilm(Film film) {
+        isFilmValid(film);
         isFilmExists(film.getId());
 
-        return filmStorage.update(film);
+        genreStorage.deleteFilmGenre(film);
+        return genreStorage.setGenre(filmStorage.updateFilm(film));
     }
 
     public List<Film> getFilms() {
-        return new ArrayList<>(filmStorage.getAll().values());
+        return genreStorage.setGenres(filmStorage.getFilms());
     }
 
-    public Film getFilmById(Integer id) {
-        isFilmExists(id);
-
-        return filmStorage.getById(id);
-    }
-
-    public List<Film> getMostPopularFilms(Integer count) {
-        return filmStorage
-                .getAll()
-                .values()
-                .stream()
-                .sorted((Film film1, Film film2) -> film2.getLikes().size() - film1.getLikes().size())
-                .limit(count)
-                .collect(Collectors.toList());
-    }
-
-    public void addLike(Integer filmId, Integer userId) {
+    public Film getFilmById(int filmId) {
         isFilmExists(filmId);
 
-        filmStorage.getById(filmId).getLikes().add(userId);
+        return genreStorage.setGenre(filmStorage.getFilmById(filmId));
     }
 
-    public void deleteLike(Integer filmId, Integer userId) {
-        isFilmExists(filmId);
-        isUserIdValid(userId);
+    public List<Film> getFamousFilms(Integer count) {
+        if (count != null) {
+            return getFilms().stream()
+                    .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
+                    .limit(count)
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
 
-        filmStorage.getById(filmId).getLikes().remove(userId);
+    public Film addLike(int filmId, int userId) {
+        isFilmExists(filmId);
+
+        filmStorage.addLike(userId, filmId);
+        log.info("Like added from User от - {} to Film - {}", userId, filmId);
+        return genreStorage.setGenre(filmStorage.getFilmById(filmId));
+    }
+
+    public Film deleteLike(int filmId, int userId) {
+        isFilmExists(filmId);
+        isLikeFromUserExist(userId);
+
+        filmStorage.deleteLike(userId, filmId);
+        log.info("Like deleted from User - {} from Film - {}", userId, filmId);
+        return genreStorage.setGenre(filmStorage.getFilmById(filmId));
     }
 
     private void isFilmExists(Integer id) {
-        if (filmStorage.getById(id) == null) {
+        if (!filmStorage.checkFilmExistInBd(id)) {
             throw new FilmNotFoundException(String.format("Film with id %s not found.", id));
         }
     }
 
-    private void isUserIdValid(Integer userId) {
-        if (userId <= 0) {
-            throw new UserNotFoundException("User id can not be negative or zero.");
+    private void isLikeFromUserExist(Integer id) {
+        if (!filmStorage.checkFilmExistInBd(id)) {
+            throw new UserNotFoundException(String.format("Like from User with id %s. not found", id));
         }
     }
 }

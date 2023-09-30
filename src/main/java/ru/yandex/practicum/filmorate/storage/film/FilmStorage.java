@@ -1,16 +1,28 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Map;
+import java.util.List;
+import java.util.Set;
 
+@Component
 public interface FilmStorage {
+    Film createFilm(Film film);
 
-    public Film create(Film film);
+    Film updateFilm(Film film);
 
-    public Film update(Film film);
+    List<Film> getFilms();
 
-    public Map<Integer, Film> getAll();
+    Film getFilmById(int id);
 
-    public Film getById(Integer id);
+    void addLike(int userId, int filmId);
+
+    void deleteLike(int userId, int filmId);
+
+    List<Film> setLikesInFilm(List<Film> films);
+
+    Set<Integer> getLikesByFilmId(int filmId);
+
+    boolean checkFilmExistInBd(int id);
 }
