@@ -35,7 +35,7 @@ public class FilmDbStorageTest {
                 .duration(110)
                 .build();
         film.setMpa(Mpa.builder()
-                .id(1)
+                .id((long) 1)
                 .name("NC-17")
                 .build());
 
@@ -53,13 +53,13 @@ public class FilmDbStorageTest {
                 .duration(136)
                 .build();
         film.setMpa(Mpa.builder()
-                .id(1)
+                .id((long) 1)
                 .name("NC-17")
                 .build());
 
         filmDbStorage.createFilm(film);
         film.setName("updatedName");
-        film.setId(1);
+        film.setId((long) 1);
         filmDbStorage.updateFilm(film);
         film.setName("name");
 
@@ -75,12 +75,13 @@ public class FilmDbStorageTest {
                 .duration(136)
                 .build();
         film.setMpa(Mpa.builder()
-                .id(1)
+                .id((long) 1)
                 .name("NC-17")
                 .build());
         user = User.builder()
                 .email("mail@mail.mail")
                 .login("login")
+                .name("name")
                 .birthday(LocalDate.of(1999, 8, 17))
                 .build();
 
@@ -99,12 +100,13 @@ public class FilmDbStorageTest {
                 .duration(136)
                 .build();
         film.setMpa(Mpa.builder()
-                .id(1)
+                .id((long) 1)
                 .name("NC-17")
                 .build());
         user = User.builder()
                 .email("mail@mail.mail")
                 .login("login")
+                .name("name")
                 .birthday(LocalDate.of(1999, 8, 17))
                 .build();
 

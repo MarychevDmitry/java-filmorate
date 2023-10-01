@@ -26,7 +26,7 @@ public class MpaDBStorageTest {
     @Test
     public void getMpaById_shouldReturnMpaWithId() {
         Mpa mpa = Mpa.builder()
-                .id(2)
+                .id((long) 2)
                 .name("PG")
                 .description("Детям рекомендуется смотреть фильм с родителями")
                 .build();

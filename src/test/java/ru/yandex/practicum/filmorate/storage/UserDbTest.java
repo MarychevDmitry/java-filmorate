@@ -26,6 +26,7 @@ public class UserDbTest {
         user = User.builder()
                 .email("mail@mail.mail")
                 .login("login")
+                .name("name")
                 .birthday(LocalDate.of(1990, 10, 15))
                 .build();
 
@@ -39,12 +40,13 @@ public class UserDbTest {
         user = User.builder()
                 .email("mail@mail.mail")
                 .login("login")
+                .name("name")
                 .birthday(LocalDate.of(1990, 10, 15))
                 .build();
 
         userDbStorage.createUser(user);
         user.setName("updatedName");
-        user.setId(1);
+        user.setId((long) 1);
         userDbStorage.updateUser(user);
         user.setName("name");
 
@@ -56,11 +58,13 @@ public class UserDbTest {
         user = User.builder()
                 .email("mail@mail.mail")
                 .login("login")
+                .name("name")
                 .birthday(LocalDate.of(1990, 10, 15))
                 .build();
         friend = User.builder()
                 .email("friend@mail.mail")
                 .login("friend")
+                .name("name")
                 .birthday(LocalDate.of(1980, 5, 10))
                 .build();
 
@@ -77,11 +81,13 @@ public class UserDbTest {
         user = User.builder()
                 .email("mail@mail.mail")
                 .login("login")
+                .name("name")
                 .birthday(LocalDate.of(1990, 10, 15))
                 .build();
         friend = User.builder()
                 .email("friend@mail.mail")
                 .login("friend")
+                .name("name")
                 .birthday(LocalDate.of(1980, 5, 10))
                 .build();
 

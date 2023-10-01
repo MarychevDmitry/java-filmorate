@@ -25,7 +25,7 @@ public class GenreDbStorageTest {
 
     @Test
     public void getGenreById_ShouldReturnGenreWithId() {
-        Assertions.assertEquals(Genre.builder().id(3).name("Мультфильм").build(), genreDbStorage.getGenreById(3));
+        Assertions.assertEquals(Genre.builder().id((long) 3).name("Мультфильм").build(), genreDbStorage.getGenreById(3));
     }
 
     @Test
