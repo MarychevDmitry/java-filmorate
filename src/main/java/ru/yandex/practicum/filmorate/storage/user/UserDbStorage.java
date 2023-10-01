@@ -30,7 +30,7 @@ public class UserDbStorage implements UserStorage {
         mapUser.put("login", user.getLogin());
         mapUser.put("name", user.getName());
         mapUser.put("birthday", user.getBirthday());
-        user.setId(simpleJdbcInsert.executeAndReturnKey(mapUser).intValue());
+        user.setId(simpleJdbcInsert.executeAndReturnKey(mapUser).longValue());
         log.info("New User added to DB. id - {}", user.getId());
         return getUserById(user.getId());
     }
@@ -58,14 +58,14 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public User getUserById(int id) {
+    public User getUserById(long id) {
         String sqlQuery = "SELECT id, email, login, name, birthday " +
                           "FROM users WHERE id = ?;";
         return jdbcTemplate.queryForObject(sqlQuery, this::mapUser, id);
     }
 
     @Override
-    public List<User> getFriendsList(Integer id) {
+    public List<User> getFriendsList(long id) {
         String sqlQuery = "SELECT u.id , u.email, u.login, u.name, u.birthday, " +
                           "FROM users u " +
                           "JOIN friends f ON f.user_id  = ? " +
@@ -82,7 +82,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void addFriend(int userId, int friendId) {
+    public void addFriend(long userId, long friendId) {
         String sqlQuery = "SELECT * " +
                           "FROM friends " +
                           "WHERE user_id = ? AND friend_id = ?;";
@@ -100,7 +100,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void deleteFriend(int userId, int friendId) {
+    public void deleteFriend(long userId, long friendId) {
         String sql = "DELETE FROM friends " +
                      "WHERE user_id = ? AND friend_id = ?;";
         jdbcTemplate.update(sql, userId, friendId);
@@ -108,7 +108,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public boolean isUserExistInBd(int id) {
+    public boolean isUserExistInBd(long id) {
         String sqlQuery = "SELECT id, email, login, name, birthday " +
                 "FROM users WHERE id = ?;";
         return !jdbcTemplate.query(sqlQuery, this::mapUser, id).isEmpty();
@@ -120,7 +120,7 @@ public class UserDbStorage implements UserStorage {
 
     private User mapUser(ResultSet resultSet, int rowNum) throws SQLException {
         User user = User.builder()
-                .id(resultSet.getInt("id"))
+                .id(resultSet.getLong("id"))
                 .email(resultSet.getString("email"))
                 .login(resultSet.getString("login"))
                 .name(resultSet.getString("name"))

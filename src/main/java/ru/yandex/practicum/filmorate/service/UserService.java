@@ -33,19 +33,19 @@ public class UserService {
         return storage.getUsers();
     }
 
-    public User getUserById(int id) {
+    public User getUserById(long id) {
         isUserExist(id);
 
         return storage.getUserById(id);
     }
 
-    public List<User> getUserFriends(int id) {
+    public List<User> getUserFriends(long id) {
         isUserExist(id);
 
         return storage.getFriendsList(id);
     }
 
-    public List<User> getCommonFriends(int firstUserId, int secondUserId) {
+    public List<User> getCommonFriends(long firstUserId, long secondUserId) {
         isUserExist(firstUserId);
         isUserExist(secondUserId);
 
@@ -56,7 +56,7 @@ public class UserService {
         return mutualFriends;
     }
 
-    public User addFriend(Integer userId, Integer friendId) {
+    public User addFriend(long userId, long friendId) {
         isUserExist(userId);
         isUserExist(friendId);
 
@@ -64,7 +64,7 @@ public class UserService {
         return storage.getUserById(userId);
     }
 
-    public User deleteFriend(int userId, int friendId) {
+    public User deleteFriend(long userId, long friendId) {
         isUserExist(userId);
         isUserExist(friendId);
 
@@ -72,9 +72,9 @@ public class UserService {
         return storage.getUserById(userId);
     }
 
-    private void isUserExist(Integer id) {
+    private void isUserExist(long id) {
         if (!storage.isUserExistInBd(id)) {
-            throw new UserNotFoundException(String.format("User with id %s. not found", id));
+            throw new UserNotFoundException(id);
         }
     }
 }

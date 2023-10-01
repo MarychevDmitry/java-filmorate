@@ -18,15 +18,15 @@ public class GenreService {
         try {
             return genreDbStorage.getGenreById(id);
         } catch (Exception e) {
-            throw new GenreNotFoundException(String.format("Genre with id %s. not found.", id));
+            throw new GenreNotFoundException(id);
         }
     }
 
     public List<Genre> getAllGenre() {
-        try {
-            return genreDbStorage.getAllGenre();
-        } catch (Exception e) {
-            throw new GenreNotFoundException("Genres not found.");
+        List<Genre> genres = genreDbStorage.getAllGenre();
+        if (genres.isEmpty()) {
+            throw new GenreNotFoundException("Genres list is empty.");
         }
+        return genres;
     }
 }

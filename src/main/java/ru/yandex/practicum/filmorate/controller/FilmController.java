@@ -18,13 +18,13 @@ public class FilmController {
 
     @PostMapping
     public Film createFilm(@RequestBody Film film) {
-        log.info(String.format("Created new %s.", film));
+        log.info(String.format("Created new %s", film));
         return filmService.createFilm(film);
     }
 
     @PutMapping
     public Film updateFilm(@RequestBody Film film) {
-        log.info(String.format("Updated Film with id: %s. %s.", film.getId(), film));
+        log.info(String.format("Updated Film with id: %s %s", film.getId(), film));
         return filmService.updateFilm(film);
     }
 
@@ -35,25 +35,25 @@ public class FilmController {
     }
 
     @GetMapping("/{filmId}")
-    public Film getFilmById(@PathVariable int filmId) {
-        log.info(String.format("Get Film with id: %s. %s.", filmId, filmService.getFilmById(filmId)));
+    public Film getFilmById(@PathVariable long filmId) {
+        log.info(String.format("Get Film with id: %s %s", filmId, filmService.getFilmById(filmId)));
         return filmService.getFilmById(filmId);
     }
 
     @GetMapping("/popular")
-    public List<Film> getMostPopularFilm(@RequestParam(name = "count", defaultValue = "10") int count) {
-        log.info(String.format("Get top %s most popular Films.", count));
+    public List<Film> getMostPopularFilm(@RequestParam(name = "count", defaultValue = "10") long count) {
+        log.info(String.format("Get top %s most popular Films", count));
         return filmService.getFamousFilms(count);
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public Film addLike(@PathVariable int id, @PathVariable int userId) {
+    public Film addLike(@PathVariable long id, @PathVariable long userId) {
         log.info(String.format("User with id: %s added Like to Film id: %s", userId, id));
         return filmService.addLike(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public Film deleteLike(@PathVariable int id, @PathVariable int userId) {
+    public Film deleteLike(@PathVariable long id, @PathVariable long userId) {
         log.info(String.format("User with id: %s deleted Like from Film id: %s", userId, id));
         return filmService.deleteLike(id, userId);
     }

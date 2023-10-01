@@ -14,7 +14,7 @@ import java.util.List;
 public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
-    public Mpa getMpaById(int id) {
+    public Mpa getMpaById(long id) {
         String sql = "SELECT * " +
                      "FROM mpa " +
                      "WHERE id = ?;";
@@ -29,7 +29,7 @@ public class MpaDbStorage implements MpaStorage {
 
     private Mpa mapMpa(ResultSet resultSet, int rowNum) throws SQLException {
         return Mpa.builder()
-                .id(resultSet.getInt("id"))
+                .id(resultSet.getLong("id"))
                 .name(resultSet.getString("name"))
                 .description(resultSet.getString("description"))
                 .build();

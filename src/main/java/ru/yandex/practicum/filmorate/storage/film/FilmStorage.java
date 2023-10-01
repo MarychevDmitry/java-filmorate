@@ -1,12 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
 import java.util.Set;
 
-@Component
 public interface FilmStorage {
     Film createFilm(Film film);
 
@@ -14,15 +12,15 @@ public interface FilmStorage {
 
     List<Film> getFilms();
 
-    Film getFilmById(int id);
+    Film getFilmById(long id);
 
-    void addLike(int userId, int filmId);
+    void addLike(long userId, long filmId);
 
-    void deleteLike(int userId, int filmId);
+    void deleteLike(long userId, long filmId);
 
     List<Film> setLikesInFilm(List<Film> films);
 
-    Set<Integer> getLikesByFilmId(int filmId);
+    Set<Integer> getLikesByFilmId(long filmId);
 
-    boolean checkFilmExistInBd(int id);
+    boolean checkFilmExistInBd(long id);
 }

@@ -12,23 +12,24 @@ import ru.yandex.practicum.filmorate.exception.*;
 public class ErrorHandler {
 
     @ExceptionHandler({NullPointerException.class, FilmNotFoundException.class, UserNotFoundException.class,
-            GenreNotFoundException.class, MpaNotFoundException.class, IndexOutOfBoundsException.class})
+            GenreNotFoundException.class, MpaNotFoundException.class, LikeNotFoundException.class, IndexOutOfBoundsException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFound(final RuntimeException exception) {
-        log.error("ERROR! Object not found : " + exception.getMessage());
+        log.error(String.format("ERROR! %s: %s", exception.getClass().getSimpleName(), exception.getMessage()));
         return new ErrorResponse(exception.getMessage());
     }
 
-    @ExceptionHandler({FilmValidationException.class, UserValidationException.class})
+    @ExceptionHandler({FilmValidationException.class, UserValidationException.class, GenreValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequest(final javax.validation.ValidationException exception) {
-        log.error("ERROR! Validation Error : " + exception.getMessage());
+        log.error(String.format("ERROR! %s: %s", exception.getClass().getSimpleName(), exception.getMessage()));
         return new ErrorResponse(exception.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable exception) {
+        log.error(String.format("ERROR! %s: %s", exception.getClass().getSimpleName(), exception));
         return new ErrorResponse("ERROR! Something went wrong!" + exception);
     }
 

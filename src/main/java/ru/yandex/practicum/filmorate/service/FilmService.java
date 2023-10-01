@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.LikeNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -38,13 +39,13 @@ public class FilmService {
         return genreStorage.setGenres(filmStorage.getFilms());
     }
 
-    public Film getFilmById(int filmId) {
+    public Film getFilmById(long filmId) {
         isFilmExists(filmId);
 
         return genreStorage.setGenre(filmStorage.getFilmById(filmId));
     }
 
-    public List<Film> getFamousFilms(Integer count) {
+    public List<Film> getFamousFilms(Long count) {
         if (count != null) {
             return getFilms().stream()
                     .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
@@ -55,7 +56,7 @@ public class FilmService {
         }
     }
 
-    public Film addLike(int filmId, int userId) {
+    public Film addLike(long filmId, long userId) {
         isFilmExists(filmId);
 
         filmStorage.addLike(userId, filmId);
@@ -63,7 +64,7 @@ public class FilmService {
         return genreStorage.setGenre(filmStorage.getFilmById(filmId));
     }
 
-    public Film deleteLike(int filmId, int userId) {
+    public Film deleteLike(long filmId, long userId) {
         isFilmExists(filmId);
         isLikeFromUserExist(userId);
 
@@ -72,15 +73,15 @@ public class FilmService {
         return genreStorage.setGenre(filmStorage.getFilmById(filmId));
     }
 
-    private void isFilmExists(Integer id) {
+    private void isFilmExists(long id) {
         if (!filmStorage.checkFilmExistInBd(id)) {
-            throw new FilmNotFoundException(String.format("Film with id %s not found.", id));
+            throw new FilmNotFoundException(id);
         }
     }
 
-    private void isLikeFromUserExist(Integer id) {
+    private void isLikeFromUserExist(long id) {
         if (!filmStorage.checkFilmExistInBd(id)) {
-            throw new UserNotFoundException(String.format("Like from User with id %s. not found", id));
+            throw new LikeNotFoundException(id);
         }
     }
 }

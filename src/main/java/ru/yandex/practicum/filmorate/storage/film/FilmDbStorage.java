@@ -32,7 +32,7 @@ public class FilmDbStorage implements FilmStorage {
         mapFilm.put("release_date", film.getReleaseDate());
         mapFilm.put("duration", film.getDuration());
         mapFilm.put("mpa_id", film.getMpa().getId());
-        film.setId(simpleJdbcInsert.executeAndReturnKey(mapFilm).intValue());
+        film.setId(simpleJdbcInsert.executeAndReturnKey(mapFilm).longValue());
         genreStorage.createFilmGenre(film);
 
         film.getGenres().clear();
@@ -65,11 +65,12 @@ public class FilmDbStorage implements FilmStorage {
                                  "m.id as mpa_id, m.name as mpa_name " +
                           "FROM films f " +
                           "JOIN mpa m ON f.mpa_id = m.id";
-        return setLikesInFilm(jdbcTemplate.query(sqlQuery, this::mapFilm));
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapFilm);
+        return setLikesInFilm(films);
     }
 
     @Override
-    public boolean checkFilmExistInBd(int id) {
+    public boolean checkFilmExistInBd(long id) {
         String sqlQuery = "SELECT id " +
                           "FROM films " +
                           "WHERE id = ?;";
@@ -78,7 +79,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> setLikesInFilm(List<Film> films) {
-        List<Integer> filmIds = new ArrayList<>();
+        List<Long> filmIds = new ArrayList<>();
         films.forEach(film -> filmIds.add(film.getId()));
         String sql = "SELECT f.id , l.user_id " +
                      "FROM films f " +
@@ -97,7 +98,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmById(int filmId) {
+    public Film getFilmById(long filmId) {
         String sqlQuery = "SELECT f.id , f.name, f.description, f.release_date, f.duration, " +
                                  "m.id as mpa_id ,m.name as mpa_name " +
                           "FROM films f " +
@@ -107,20 +108,20 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void addLike(int userId, int filmId) {
+    public void addLike(long userId, long filmId) {
         String sqlQuery = "INSERT into film_likes (film_id, user_id) values(?, ?)";
         jdbcTemplate.update(sqlQuery, filmId, userId);
     }
 
     @Override
-    public void deleteLike(int userId, int filmId) {
+    public void deleteLike(long userId, long filmId) {
         String sql = "DELETE FROM film_likes " +
                      "WHERE user_id = ? and film_id = ?";
         jdbcTemplate.update(sql, userId, filmId);
     }
 
     @Override
-    public Set<Integer> getLikesByFilmId(int filmId) {
+    public Set<Integer> getLikesByFilmId(long filmId) {
         String sql = "SELECT user_id " +
                      "FROM film_likes " +
                      "WHERE film_id = ?";
@@ -137,13 +138,13 @@ public class FilmDbStorage implements FilmStorage {
 
     private Film mapFilm(ResultSet resultSet, int rowNum) throws SQLException {
         Film film = Film.builder()
-                .id(resultSet.getInt("id"))
+                .id(resultSet.getLong("id"))
                 .name(resultSet.getString("name"))
                 .description(resultSet.getString("description"))
                 .releaseDate(resultSet.getDate("release_date").toLocalDate())
                 .duration(resultSet.getInt("duration"))
                 .mpa(Mpa.builder()
-                        .id(resultSet.getInt("mpa_id"))
+                        .id(resultSet.getLong("mpa_id"))
                         .name(resultSet.getString("mpa_name"))
                         .build())
                 .build();

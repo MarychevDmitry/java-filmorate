@@ -8,11 +8,15 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Сущность которая описывает объект: Фильм
+ */
+
 @Data
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class Film {
-    private Integer id;
+    private Long id;
     private String name;
     private String description;
     private LocalDate releaseDate;

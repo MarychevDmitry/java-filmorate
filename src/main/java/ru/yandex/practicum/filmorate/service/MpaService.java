@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.filmMpa.MpaDbStorage;
 
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,22 +16,22 @@ import java.util.stream.Collectors;
 public class MpaService {
     private final MpaDbStorage mpaDbStorage;
 
-    public Mpa getMpaById(int id) {
+    public Mpa getMpaById(long id) {
         try {
             return mpaDbStorage.getMpaById(id);
         } catch (Exception e) {
-            throw new MpaNotFoundException(String.format("Mpa with id %s. not found.", id));
+            throw new MpaNotFoundException(id);
         }
     }
 
     public List<Mpa> getAllMpa() {
-        try {
-            return mpaDbStorage.getAllMpa()
-                    .stream()
-                    .sorted((o1, o2) -> o1.getId() - o2.getId())
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new MpaNotFoundException("Mpa not found.");
+        List<Mpa> mpas = mpaDbStorage.getAllMpa()
+                .stream()
+                .sorted(Comparator.comparingLong(Mpa::getId))
+                .collect(Collectors.toList());
+        if (mpas.isEmpty()) {
+            throw new MpaNotFoundException("Mpa list is empty.");
         }
+        return mpas;
     }
 }

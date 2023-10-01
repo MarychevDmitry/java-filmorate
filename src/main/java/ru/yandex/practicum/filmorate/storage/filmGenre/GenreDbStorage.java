@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import static ru.yandex.practicum.filmorate.validator.GenreValidator.isGenreValid;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,7 +22,7 @@ public class GenreDbStorage implements GenreStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Genre getGenreById(int id) {
+    public Genre getGenreById(long id) {
         String sql = "SELECT g.id ," +
                             "g.name " +
                      "FROM genre g " +
@@ -36,7 +37,7 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     public List<Film> setGenres(List<Film> films) {
-        List<Integer> filmIds = new ArrayList<>();
+        List<Long> filmIds = new ArrayList<>();
         films.forEach(film -> filmIds.add(film.getId()));
         String sql = "SELECT fg.film_id, g.id, g.name " +
                      "FROM genre g " +
@@ -49,7 +50,7 @@ public class GenreDbStorage implements GenreStorage {
             for (Film film : films) {
                 if (film.getId() == genreRows.getInt("film_id")) {
                     film.getGenres().add(Genre.builder()
-                            .id(genreRows.getInt("id"))
+                            .id(genreRows.getLong("id"))
                             .name(genreRows.getString("name")).build());
                 }
             }
@@ -83,9 +84,11 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     private Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
-        return Genre.builder()
-                .id(resultSet.getInt("id"))
+        Genre genre = Genre.builder()
+                .id(resultSet.getLong("id"))
                 .name(resultSet.getString("name"))
                 .build();
+        isGenreValid(genre);
+        return genre;
     }
 }

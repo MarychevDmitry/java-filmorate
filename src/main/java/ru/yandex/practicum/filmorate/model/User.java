@@ -9,12 +9,16 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Сущность которая описывает объект: Пользователь
+ */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class User {
-    private Integer id;
+    private Long id;
     private String email;
     private String login;
     private String name;
