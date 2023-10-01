@@ -70,14 +70,6 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public boolean checkFilmExistInBd(long id) {
-        String sqlQuery = "SELECT id " +
-                          "FROM films " +
-                          "WHERE id = ?;";
-        return !jdbcTemplate.query(sqlQuery, this::mapFilmId, id).isEmpty();
-    }
-
-    @Override
     public List<Film> setLikesInFilm(List<Film> films) {
         List<Long> filmIds = new ArrayList<>();
         films.forEach(film -> filmIds.add(film.getId()));
@@ -104,7 +96,8 @@ public class FilmDbStorage implements FilmStorage {
                           "FROM films f " +
                           "JOIN mpa m ON f.mpa_id  = m.id " +
                           "WHERE f.id = ?;";
-        return setLikesInFilm(List.of(jdbcTemplate.query(sqlQuery, this::mapFilm, filmId).get(0))).get(0);
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapFilm, filmId);
+        return setLikesInFilm(films).get(0);
     }
 
     @Override
@@ -126,6 +119,14 @@ public class FilmDbStorage implements FilmStorage {
                      "FROM film_likes " +
                      "WHERE film_id = ?";
         return new HashSet<>(jdbcTemplate.query(sql, this::mapLike, filmId));
+    }
+
+    @Override
+    public boolean checkFilmExistInBd(long id) {
+        String sqlQuery = "SELECT id " +
+                "FROM films " +
+                "WHERE id = ?;";
+        return !jdbcTemplate.query(sqlQuery, this::mapFilmId, id).isEmpty();
     }
 
     private Integer mapFilmId(ResultSet resultSet, int rowNum) throws SQLException {
