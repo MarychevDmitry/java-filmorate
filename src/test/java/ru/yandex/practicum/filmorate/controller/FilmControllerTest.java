@@ -12,7 +12,6 @@ import static ru.yandex.practicum.filmorate.validator.FilmValidator.isFilmValid;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Map;
 
 @SpringBootTest
 public class FilmControllerTest {
