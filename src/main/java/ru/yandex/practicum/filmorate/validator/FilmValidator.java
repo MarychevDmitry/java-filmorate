@@ -19,7 +19,7 @@ public class FilmValidator {
             throw new FilmValidationException(String.format("Film release date can't be before %s. %s.", FIRST_FILM_BIRTHDAY, film));
         } else if (film.getDuration() < 1) {
             throw new FilmValidationException(String.format("Duration should be positive. %s.", film));
-        }else if (film.getMpa() == null) {
+        } else if (film.getMpa() == null) {
             throw new FilmValidationException("Film MPA can not be NULL.");
         } else {
             return true;
